@@ -53,6 +53,7 @@ published: false
 ## 原型模式
 原型模式是用于创建建对象的一种模式,如果我们想要创建一个对象, 一种方法是先指定它的类型,然后通过类来实例化这个对象。原型模式采用了另外一种方式,我们不再关心对象的类型,而是找到一个对象,然后通过克隆来创建一个一模一样的对象。
 
+### 使用克隆创建对象的例子
 假设我们在编写一个飞机大战的网页游戏。某种飞机拥有分身技能,当它使用分身技能的时候,要在页面中创建一些跟它一模一样的飞机。如果不使用原型模式,那么在创建新飞机之前,需要先保存飞机的当前血量、攻击和防御等级,随后将这些信息设置到新创建的飞机上面,这样才能得到一架一模一样的新飞机。如果使用原型模式,我们只需要调用负责克隆的方法Object.create（ECMAScript 5 提供）,就能完成同样的功能。如下所示：
 
 	 var Plane = function() {
@@ -64,7 +65,46 @@ published: false
     plane.blood = 500;
 
     var clonePlane = Object.create(plane);
-    console.log(clonePlane);
+    console.log(clonePlane);  // Object {blood: 500, attackLevel: 1, defenseLevel: 1}
+
+### JavaScript的原型继承
+Javascript中的大部分数据都是对象（除了基本类型），这些对象追根溯源都来自于一个根对象Object.prototype，都是从 Object.prototype对象克隆而来的。在Javascript中 **new** 运算符的本质就是克隆Object.prototype对象，再将对象的原型指向函数构造器的原型，并给新对象设置相应属性的过程。我们可以通过下面代码来理解 new 运算的过程。
+
+```
+	 function Person(name) {
+        this.name = name;
+    }
+    var a = new Person("Marlon"); 
+    console.log("a.name: " + a.name);
+```
+
+```
+	 var objectFactory = function() {
+        var obj = new Object(),  // 从Object.prototype上克隆一个空对象
+            Constructor = [].shift.call(arguments);  //取得传入的构造器，此例是Person
+        obj.__proto__ = Constructor.prototype;  //指向正确的原型
+        var ret = Constructor.apply(obj, arguments); // 用传入的构造器给obj设置属性
+        return typeof ret === 'object' ? ret : obj; //确保总是返回一个对象
+    }
+    var b = objectFactory(Person, 'Marlon'); //b和a是等价的,原型都是Person.prototype
+    console.log("b.name: " + b.name);  
+    
+    console.log(Object.getPrototypeOf(b) === Person.prototype); //true
+
+```
+
+如上所示，对象会记住它的原型，JavaScript给对象提供了一个名为__proto__的隐藏属性（在chrome和firefox上可以访问到），对象的__proto__属性默认会指向它的构造器的原型对象,即{Constructor}.prototype。该属性是对象跟对象构造器的原型联系起来的纽带。如果对象无法响应某个请求，他会把这个请求委托给他的构造器的原型对象。请求顺着原型链传递下去,直到遇到一个可以处理该请求的对象为止。这就是原型继承得以实现的原因，下面这段代码将b对象的构造器B的原型指向对象a，让b对象能够借用a对象的能力。
+
+	var A = function() {};
+    A.prototype = {name:'Marlon'};
+    var a = new A();
+    var B = function() {};
+    B.prototype = a;
+    var b = new B();
+    console.log(b.name); //输出：Marlon
+
+
+
 
 
 
