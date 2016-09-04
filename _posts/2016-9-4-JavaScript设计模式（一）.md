@@ -50,9 +50,25 @@ published: false
 * [享元模式](#user-content-享元模式)
 
 
+## 原型模式
+原型模式是用于创建建对象的一种模式,如果我们想要创建一个对象, 一种方法是先指定它的类型,然后通过类来实例化这个对象。原型模式采用了另外一种方式,我们不再关心对象的类型,而是找到一个对象,然后通过克隆来创建一个一模一样的对象。
+
+假设我们在编写一个飞机大战的网页游戏。某种飞机拥有分身技能,当它使用分身技能的时候,要在页面中创建一些跟它一模一样的飞机。如果不使用原型模式,那么在创建新飞机之前,需要先保存飞机的当前血量、攻击和防御等级,随后将这些信息设置到新创建的飞机上面,这样才能得到一架一模一样的新飞机。如果使用原型模式,我们只需要调用负责克隆的方法Object.create（ECMAScript 5 提供）,就能完成同样的功能。如下所示：
+
+	 var Plane = function() {
+        this.blood = 100;
+        this.attackLevel = 1;
+        this.defencseLevel = 1;
+    }
+    var plane = new Plane();
+    plane.blood = 500;
+
+    var clonePlane = Object.create(plane);
+    console.log(clonePlane);
 
 
 
-
-
-
+## 参考资料
+1. 《设计模式—可复用面向对象软件的基础》，作者: [美] Erich Gamma等，机械工业出版社
+2. 《Head First 设计模式》作者: 弗里曼，中国电力出版社
+3. 《JavaScript设计模式与开发实践》 作者:曾探，人民邮电出版社
