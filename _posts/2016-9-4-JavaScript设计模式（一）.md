@@ -166,7 +166,94 @@ link.insert(document.body);
 由于JavaScript是动态类型语言。没有类型，就没有类型耦合问题。所以其实JavaScript是不需要像工厂方法模式和抽象工厂模式中那样定义一个抽象工厂接口来向上转型以实现对象的多态性。Javascript中对象的多态性是天然的，没有必要刻意去把对象“延迟”到子类创建，简单工厂就可以创建不同类型的具体产品，只要向工厂对象传入不同的产品对象即可。也就是说,JavaScript实际上是不需要工厂方法模式和抽象工厂模式的。
 
 ## 迭代器模式
+迭代器模式是指提供一种方法顺序访问一个聚合对象中的各个元素。ECMAScript5为数组定义的forEach就是迭代器模式的原生实现，用法如下：
 
+	[2, 5, , 9].forEach(function(element, index, array){
+     	console.log('a[' + index + '] = ' + element);
+    });
+
+迭代器可以分为内部迭代器和外部迭代器。原生的forEach函数属于内部迭代器，使用起来非常方便，函数的内部已经定义好了迭代规则,外部只需要一次初始调用。但是内部迭代器无法控制迭代规则，不够灵活。这就需要外部迭代器，外部迭代器会显示的请求迭代下一个元素，可以控制迭代的过程和顺序。下面是使用外部迭代器比较两个数组是否相等的示例程序：
+
+```
+var Iterator = function(obj) {
+     var current = 0;
+     var next = function () {
+         current += 1;
+     };
+     var isDone = function() {
+         return current >= obj.length;
+     }
+     var getCurrItem = function() {
+         return obj[current];
+     }
+     return {
+         next: next,
+         isDone: isDone,
+         getCurrItem: getCurrItem
+     }
+}
+var compare = function(iterator1,iterator2) {
+     while( !iterator1.isDone() && !iterator2.isDone()) {
+       if(iterator1.getCurrItem() !== iterator2.getCurrItem()){
+             throw new Error('iterator1 !== iterator2');
+       }
+       iterator1.next(); //显示请求迭代下一个元素
+       iterator2.next();
+     }
+     alert('iterator1 == iterator2');
+}
+var iterator1 = Iterator( [ 1, 2, 3 ] );
+var iterator2 = Iterator( [ 1, 2, 3 ] );
+compare( iterator1, iterator2 ); //iterator1 == iterator2
+```
+
+### 应用举例：根据浏览器环境选择不同上传文件方式
+由于使用控件上传文件可以暂停和续传，所以优先使用控件上传。如果没有安装上传控件，则使用flash上传，如果也没有安装flash，则使用原生的表单上传。直接实现代码如下：
+
+    var getUploadObj = function(){
+        try{
+            return new ActiveXObject( "TXFTNActiveX.FTNUpload" );//IE 上传控件
+        }catch(e){
+            var swf = navigator.plugins["Shockwave Flash"] || new ActiveXObject('ShockwaveFlash.ShockwaveFlash');
+            if(swf) {
+                var str = '<object type="application/x-shockwave-flash"></object>';
+                return $(str).appendTo($('body'));  //flash上传
+            }else{
+                var str = '<input name="file" type="file" class="ui-file"/>'; //表单上传
+                return $( str ).appendTo( $('body') );
+            }
+        }
+    };
+
+这段代码很直接，但并不优雅。首先这个getUploadObj函数里面充斥着try，catch和if else条件分支。如果之后还要增加其他上传方式，只能往这个函数里面增加条件分支，严重违反开放封闭原则。下面用迭代器模式重构程序，代码如下：
+
+	var getActiveUploadObj = function(){ 
+        try{
+            return new ActiveXObject( "TXFTNActiveX.FTNUpload" );
+        }catch(e){
+            return false;
+        }
+    };
+    var getFlashUploadObj = function(){
+       //mock
+        return false;
+    };
+    var getFormUpladObj = function(){
+        var str = '<input name="file" type="file" class="ui-file"/>';
+        return $( str ).appendTo( $('body') );
+    };
+    var iteratorUploadObj = function(){
+        for ( var i = 0, fn; fn = arguments[ i++ ]; ) {
+            var uploadObj = fn();
+            if (uploadObj !== false) {
+                return uploadObj;
+            }
+        }
+    };
+    var uploadObj = iteratorUploadObj( getActiveUploadObj, getFlashUploadObj, getFormUpladObj);
+    console.log(uploadObj);
+
+经过重构，将不同的上传方式封装到独立的函数中，方便之后扩展。每个函数都遵循一个约定：如果该函数里面的upload对象是可用的,则让函数返回该对象,反之返回false,提示迭代器往后面迭代。
 
 ## 参考资料
 1. 《设计模式—可复用面向对象软件的基础》，作者: [美] Erich Gamma等，机械工业出版社
