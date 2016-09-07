@@ -2,7 +2,7 @@
 layout: post
 title: JavaScript设计模式（一）
 date: {}
-published: false
+published: true
 ---
 本文将介绍前端开发中常见设计模式的应用场景，及Javascript实现。
 
@@ -157,6 +157,7 @@ link.insert(document.body);
 ### 工厂方法模式
 工厂方法模式定义了一个创建对象的接口，但由子类决定要实例化的类是哪一个。类图如下：
 ![工厂方法模式类图](https://github.com/chenjin3/chenjin3.github.io/blob/master/images/designPattern/factoryMethod.png)
+
 
 
 ### 抽象工厂模式
