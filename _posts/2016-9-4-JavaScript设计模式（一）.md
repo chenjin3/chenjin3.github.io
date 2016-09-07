@@ -2,7 +2,7 @@
 layout: post
 title: JavaScript设计模式（一）
 date: {}
-published: false
+published: true
 ---
 本文将介绍前端开发中常见设计模式的应用场景，及Javascript实现。
 
@@ -164,22 +164,7 @@ link.insert(document.body);
 
 当抽象工厂模式中每一个具体工厂类只创建一个产品对象，也就是只存在一个具体产品类时，抽象工厂模式退化成工厂方法模式；当工厂方法模式中抽象工厂与具体工厂合并，提供一个统一的工厂来创建产品对象，工厂方法模式退化成简单工厂模式。
 
-由于JavaScript是动态类型语言。没有类型，就没有类型耦合问题。所以其实JavaScript是不需要像工厂方法模式和抽象工厂模式中那样定义一个抽象工厂接口来向上转型以实现对象的多态性。Javascript中对象的多态性是天然的，自然也没有必要刻意去把对象“延迟”到子类创建。也就是说,JavaScript实际上是不需要工厂方法模式和抽象工厂模式的。JavaScript中对象天然的多态性可以通过以下程序来体现：
-
-	var makeSound = function(animal) {
-        animal.sound();
-    }
-    var Duck = function(){};
-    Duck.prototype.sound = function() {
-        console.log("嘎嘎嘎");
-    };
-    var Chicken = function(){};
-    Chicken.prototype.sound = function() {
-        console.log("咯咯咯");
-    };
-    makeSound(new Duck()); //嘎嘎嘎
-    makeSound(new Chicken()); //咯咯咯
-
+由于JavaScript是动态类型语言。没有类型，就没有类型耦合问题。所以其实JavaScript是不需要像工厂方法模式和抽象工厂模式中那样定义一个抽象工厂接口来向上转型以实现对象的多态性。Javascript中对象的多态性是天然的，没有必要刻意去把对象“延迟”到子类创建，简单工厂就可以创建不同类型的具体产品，只要向工厂对象传入不同的产品对象即可。也就是说,JavaScript实际上是不需要工厂方法模式和抽象工厂模式的。
 
 ## 参考资料
 1. 《设计模式—可复用面向对象软件的基础》，作者: [美] Erich Gamma等，机械工业出版社
