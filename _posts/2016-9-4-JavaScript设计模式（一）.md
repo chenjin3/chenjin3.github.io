@@ -152,16 +152,15 @@ link.insert(document.body);
 
 ```
 
-当对象的创建比较复杂，或者需要依赖具体环境常见不同的对象，或者需要处理大量具有相同属性的小对象、需要缓存对象的时候适合使用简单工厂模式。
+当对象的创建比较复杂，或者需要依赖具体环境常见不同的对象，或者需要处理大量具有相同属性的小对象、需要缓存对象的时候适合使用简单工厂模式。而下面要介绍的工厂方法模式和抽象工厂模式都是为了迎合依赖倒置原则，解开对象类型之间的耦合关系，让对象表现出多态性而产生的。
 
 ### 工厂方法模式
 工厂方法模式定义了一个创建对象的接口，但由子类决定要实例化的类是哪一个。类图如下：
 ![工厂方法模式类图](https://github.com/chenjin3/chenjin3.github.io/blob/master/images/designPattern/factoryMethod.png)
 
-
-
 ### 抽象工厂模式
-
+抽象工厂模式提供一个接口，用于创建相关或依赖对象的家族。类图如下：
+![工厂方法模式类图](https://github.com/chenjin3/chenjin3.github.io/blob/master/images/designPattern/abstractFactory.png)
 
 ## 参考资料
 1. 《设计模式—可复用面向对象软件的基础》，作者: [美] Erich Gamma等，机械工业出版社
