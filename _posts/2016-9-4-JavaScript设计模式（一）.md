@@ -51,9 +51,115 @@ published: false
 * [享元模式](#user-content-享元模式)
 
 
+## 原型模式
+原型模式是用于创建建对象的一种模式,如果我们想要创建一个对象, 一种方法是先指定它的类型,然后通过类来实例化这个对象。原型模式采用了另外一种方式,我们不再关心对象的类型,而是找到一个对象,然后通过克隆来创建一个一模一样的对象。
+
+### 使用克隆创建对象的例子
+假设我们在编写一个飞机大战的网页游戏。某种飞机拥有分身技能,当它使用分身技能的时候,要在页面中创建一些跟它一模一样的飞机。如果不使用原型模式,那么在创建新飞机之前,需要先保存飞机的当前血量、攻击和防御等级,随后将这些信息设置到新创建的飞机上面,这样才能得到一架一模一样的新飞机。如果使用原型模式,我们只需要调用负责克隆的方法Object.create（ECMAScript 5 提供）,就能完成同样的功能。如下所示：
+
+	 var Plane = function() {
+        this.blood = 100;
+        this.attackLevel = 1;
+        this.defencseLevel = 1;
+    }
+    var plane = new Plane();
+    plane.blood = 500;
+
+    var clonePlane = Object.create(plane);
+    console.log(clonePlane);  // Object {blood: 500, attackLevel: 1, defenseLevel: 1}
+
+### JavaScript的原型继承
+Javascript中的大部分数据都是对象（除了基本类型），这些对象追根溯源都来自于一个根对象Object.prototype，都是从 Object.prototype对象克隆而来的。在Javascript中 **new** 运算符的本质就是克隆Object.prototype对象，再将对象的原型指向函数构造器的原型，并给新对象设置相应属性的过程。我们可以通过下面代码来理解 new 运算的过程。
+
+```
+	 function Person(name) {
+        this.name = name;
+    }
+    var a = new Person("Marlon"); 
+    console.log("a.name: " + a.name);
+```
+
+```
+	 var objectFactory = function() {
+        var obj = new Object(),  // 从Object.prototype上克隆一个空对象
+            Constructor = [].shift.call(arguments);  //取得传入的构造器，此例是Person
+        obj.__proto__ = Constructor.prototype;  //指向正确的原型
+        var ret = Constructor.apply(obj, arguments); // 用传入的构造器给obj设置属性
+        return typeof ret === 'object' ? ret : obj; //确保总是返回一个对象
+    }
+    var b = objectFactory(Person, 'Marlon'); //b和a是等价的,原型都是Person.prototype
+    console.log("b.name: " + b.name);  
+    
+    console.log(Object.getPrototypeOf(b) === Person.prototype); //true
+
+```
+
+如上所示，对象会记住它的原型，JavaScript给对象提供了一个名为__proto__的隐藏属性（在chrome和firefox上可以访问到），对象的__proto__属性默认会指向它的构造器的原型对象,即{Constructor}.prototype。该属性是对象跟对象构造器的原型联系起来的纽带。如果对象无法响应某个请求，他会把这个请求委托给他的构造器的原型对象。请求顺着原型链传递下去,直到遇到一个可以处理该请求的对象为止。这就是原型继承得以实现的原因，下面这段代码将b对象的构造器B的原型指向对象a，让b对象能够借用a对象的能力。
+
+	var A = function() {};
+    A.prototype = {name:'Marlon'};
+    var a = new A();
+    var B = function() {};
+    B.prototype = a;
+    var b = new B();
+    console.log(b.name); //输出：Marlon
 
 
+## 工厂模式
+工厂模式是用来封装创建对象逻辑的。将对象的创建和对象本身业务处理分离可以降低系统的耦合度，使得两者修改起来都相对容易。外界对于这些对象只需要知道它们共同的接口，而不清楚其具体的实现细节，使整个系统的设计更加符合单一职责原则。工厂模式有三种变种：简单工厂模式（又称为静态工厂方法模式），工厂方法模式和抽象工厂模式。
+
+### 简单工厂模式
+在简单工厂模式中，可以根据参数的不同返回不同的实例，工厂封装对象的创建，将客户程序从具体产品类中解耦。假如我们想在网页面里插入一些元素，而这些元素类型不固定，可能是图片，也有可能是链接或是文本。用工厂模式实现如下：
+
+```
+var dom = dom || {};
+//子函数1：处理文本
+dom.Text = function () {
+    this.insert = function (where) {
+        var txt = document.createTextNode(this.url);
+        where.appendChild(txt);
+    };
+};
+
+//子函数2：处理链接
+dom.Link = function () {
+    this.insert = function (where) {
+        var link = document.createElement('a');
+        link.href = this.url;
+        link.appendChild(document.createTextNode(this.url));
+        where.appendChild(link);
+    };
+};
+
+//子函数3：处理图片
+dom.Image = function () {
+    this.insert = function (where) {
+        var img = document.createElement('img');
+        img.src = this.url;
+        where.appendChild(img);
+    };
+};
+
+// 工厂方法
+dom.factory = function (type) {
+    return new page.dom[type];
+}
+
+//客户端程序
+var link = dom.factory('Link');
+link.url = 'http://www.google.com';
+link.insert(document.body);
+
+```
+
+当对象的创建比较复杂，或者需要依赖具体环境常见不同的对象，或者需要处理大量具有相同属性的小对象、需要缓存对象的时候适合使用简单工厂模式。
+
+### 工厂方法模式
+
+### 抽象工厂模式
 
 
-
-
+## 参考资料
+1. 《设计模式—可复用面向对象软件的基础》，作者: [美] Erich Gamma等，机械工业出版社
+2. 《Head First 设计模式》作者: 弗里曼，中国电力出版社
+3. 《JavaScript设计模式与开发实践》 作者:曾探，人民邮电出版社
