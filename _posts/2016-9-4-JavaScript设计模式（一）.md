@@ -1,7 +1,7 @@
 ---
 layout: post
 title: JavaScript设计模式（一）
-date: {}
+date: 2016-09-04
 published: true
 ---
 本文将介绍前端开发中常见设计模式的应用场景，及Javascript实现。
@@ -156,13 +156,15 @@ link.insert(document.body);
 
 ### 工厂方法模式
 工厂方法模式定义了一个创建对象的接口，但由子类决定要实例化的类是哪一个。类图如下：
-![工厂方法模式类图](https://github.com/chenjin3/chenjin3.github.io/blob/master/images/designPattern/factoryMethod.png)
+![工厂方法模式类图](/images/designPattern/factoryMethod.png)
 
 ### 抽象工厂模式
 抽象工厂模式提供一个接口，用于创建相关或依赖对象的家族。类图如下：
-![工厂方法模式类图](https://github.com/chenjin3/chenjin3.github.io/blob/master/images/designPattern/abstractFactory.png)
+![工厂方法模式类图](/images/designPattern/abstractFactory.png)
 
 ## 参考资料
 1. 《设计模式—可复用面向对象软件的基础》，作者: [美] Erich Gamma等，机械工业出版社
 2. 《Head First 设计模式》作者: 弗里曼，中国电力出版社
 3. 《JavaScript设计模式与开发实践》 作者:曾探，人民邮电出版社
+
+
