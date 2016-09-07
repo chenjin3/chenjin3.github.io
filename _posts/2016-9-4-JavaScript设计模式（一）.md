@@ -1,6 +1,7 @@
 ---
 layout: post
 title: JavaScript设计模式（一）
+date: 2016-09-04 10:30:00
 published: false
 ---
 本文将介绍前端开发中常见设计模式的应用场景，及Javascript实现。
