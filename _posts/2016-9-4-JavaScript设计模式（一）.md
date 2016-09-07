@@ -78,6 +78,7 @@ published: true
     var clonePlane = Object.create(plane);
     console.log(clonePlane);  // Object {blood: 500, attackLevel: 1, defenseLevel: 1}
 
+
 ### JavaScript的原型继承
 
 Javascript中的大部分数据都是对象（除了基本类型），这些对象追根溯源都来自于一个根对象Object.prototype，都是从 Object.prototype对象克隆而来的。在Javascript中 **new** 运算符的本质就是克隆Object.prototype对象，再将对象的原型指向函数构造器的原型，并给新对象设置相应属性的过程。我们可以通过下面代码来理解 new 运算的过程。
