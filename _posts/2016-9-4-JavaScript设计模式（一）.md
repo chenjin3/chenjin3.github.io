@@ -276,7 +276,138 @@ compare( iterator1, iterator2 ); //iterator1 == iterator2
 经过重构，将不同的上传方式封装到独立的函数中，方便之后扩展。每个函数都遵循一个约定：如果该函数里面的upload对象是可用的,则让函数返回该对象,反之返回false,提示迭代器往后面迭代。
 
 ## 职责链模式
+职责链模式将处理请求的对象连成一条链，并沿着这条链传递请求，直到一个请求处理它为止，从而避免的发送者和接收者之间的耦合关系。
+### 一个电商预购的例子
+假设一个售卖手机的电商网站,经过分别交纳500元和200元定金的预订后,现在到了正式购买的阶段。公司针对支付过定金的用户有一定的优惠政策。在正式购买后, 已经支付过500元定金的用户会收到100元的商城优惠券,支付过200元的用户可以收到50元的优惠券,而之前没有支付定金的用户只能进入普通购买模式,也就是没有优惠券, 且在库存有限的情况下不一定保证能买到。下面把这个流程写成代码：
+	
+    var order = function( orderType, pay, stock ){
+        if ( orderType === 1 ){ // 500 元定金购买模式
+            if ( pay === true ){ // 已支付定金
+                console.log( '500 元定金预购, 得到100 优惠券' );
+            }else{ // 未支付定金，降级到普通购买模式
+                if ( stock > 0 ){ // 用于普通购买的手机还有库存
+                    console.log( '普通购买, 无优惠券' );
 
+                }else{
+                    console.log( '手机库存不足' );
+                }
+            }
+        }
+        else if ( orderType === 2 ){ // 200 元定金购买模式
+            if ( pay === true ){
+                console.log( '200 元定金预购, 得到50 优惠券' );
+            }else{
+                if ( stock > 0 ){
+                    console.log( '普通购买, 无优惠券' );
+                }else{
+                    console.log( '手机库存不足' );
+                }
+            }
+        }
+        else if ( orderType === 3 ){
+            if ( stock > 0 ){
+                console.log( '普通购买, 无优惠券' );
+            }else{
+                console.log( '手机库存不足' );
+            }
+        }
+    };
+    order( 1 , true, 500); // 输出： 500 元定金预购, 得到100 优惠券
+
+这段代码虽然可以完成任务，但这个大函数包含许多嵌套的条件分支语句，很难维护。可以把500元订单、200元订单和普通购买分成三个函数，采用职责链模式重构它，代码如下：
+
+```
+var order500 = function( orderType, pay, stock ){
+if ( orderType === 1 && pay === true ){
+	console.log( '500 元定金预购, 得到100 优惠券' );
+}else{
+	order200( orderType, pay, stock ); // 将请求传递给200 元订单
+}
+};
+// 200 元订单
+var order200 = function( orderType, pay, stock ){
+if ( orderType === 2 && pay === true ){
+	console.log( '200 元定金预购, 得到50 优惠券' );
+}else{
+	orderNormal( orderType, pay, stock ); // 将请求传递给普通订单
+}
+};
+// 普通购买订单
+var orderNormal = function( orderType, pay, stock ){
+if ( stock > 0 ){
+	console.log( '普通购买, 无优惠券' );
+}else{
+	console.log( '手机库存不足' );
+}
+};
+// 测试结果：
+order500( 1 , true, 500); // 输出：500 元定金预购, 得到100 优惠券
+order500( 1, false, 500 ); // 输出：普通购买, 无优惠券
+order500( 2, true, 500 ); // 输出：200 元定金预购, 得到500 优惠券
+order500( 3, false, 500 ); // 输出：普通购买, 无优惠券
+order500( 3, false, 0 ); // 输出：手机库存不足
+```
+
+重构后的代码让请求在三个职责链节点的处理函数中传递，直到请求任务被正确处理。比起之前的实现，代码结构清晰很多。但请求在链条传递中的顺序是写死的，传递请求的代码被耦合在了业务函数之中。如何能让链中的各个节点可以灵活拆分和重组呢？我们需要把处理业务的函数包装进职责链节点。代码如下：
+
+
+    var order500 = function( orderType, pay, stock ){
+        if ( orderType === 1 && pay === true ){
+            console.log( '500 元定金预购，得到100 优惠券' );
+        }else{
+            return 'nextSuccessor'; //不能处理请求，则将请求向后面传递
+        }
+    };
+    var order200 = function( orderType, pay, stock ){
+        if ( orderType === 2 && pay === true ){
+            console.log( '200 元定金预购，得到50 优惠券' );
+        }else{
+            //return 'nextSuccessor'; //把请求往后面传递
+            var self = this;
+            var args = arguments;
+            setTimeout(function() {  //异步职责链
+                self.next.apply(self, args); //向后传递请求
+            },1000);
+        }
+    };
+    var orderNormal = function( orderType, pay, stock ){
+        if ( stock > 0 ){
+            console.log( '普通购买，无优惠券' );
+        }else{
+            console.log( '手机库存不足' );
+        }
+    };
+
+    //用Chain类把普通函数包装成职责链的节点
+    var Chain = function( fn ){
+        this.fn = fn;
+        this.successor = null;
+    };
+    Chain.prototype.setNextSuccessor = function( successor ){  //指定在链中的下一个节点
+        return this.successor = successor;
+    };
+    Chain.prototype.passRequest = function(){ //传递请求给某个节点
+        var ret = this.fn.apply( this, arguments );
+        if ( ret === 'nextSuccessor' ){
+          return this.successor && this.successor.passRequest.apply( this.successor,arguments);
+        }
+        return ret;
+    };
+    //传递请求给职责链的下一个节点，用于异步职责链
+    Chain.prototype.next = function() {
+      return this.successor && this.successor.passRequest.apply(this.successor, arguments);
+    };
+
+    //把三个订单函数包装成职责链的节点
+    var chainOrder500 = new Chain( order500 );
+    var chainOrder200 = new Chain( order200  );
+    var chainOrderNormal = new Chain( orderNormal );
+    chainOrder500.setNextSuccessor( chainOrder200 ); //指定节点在职责链中的顺序
+    chainOrder200.setNextSuccessor( chainOrderNormal );
+    chainOrder500.passRequest( 1, true, 500 ); // 把请求传递给第一个节点，输出：500 元定金预购，得到100 优惠券
+    chainOrder500.passRequest( 2, true, 500 ); // 输出：200 元定金预购，得到50 优惠券
+    chainOrder500.passRequest( 3, true, 500 ); // 输出：普通购买，无优惠券
+    chainOrder500.passRequest( 1, false, 0 ); // 输出：手机库存不足
 
 
 ## 参考资料
@@ -284,3 +415,5 @@ compare( iterator1, iterator2 ); //iterator1 == iterator2
 1. 《设计模式—可复用面向对象软件的基础》，作者: [美] Erich Gamma等，机械工业出版社
 2. 《Head First 设计模式》作者: 弗里曼，中国电力出版社
 3. 《JavaScript设计模式与开发实践》 作者:曾探，人民邮电出版社
+
+
