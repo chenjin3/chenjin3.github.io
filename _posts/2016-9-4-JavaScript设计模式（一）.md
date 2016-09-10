@@ -691,5 +691,6 @@ registerForm.onsubmit比较复杂，包含了很多条件语句，而且缺乏�
 1. 《设计模式—可复用面向对象软件的基础》，作者: [美] Erich Gamma等，机械工业出版社
 2. 《Head First 设计模式》作者: 弗里曼，中国电力出版社
 3. 《JavaScript设计模式与开发实践》 作者:曾探，人民邮电出版社
+4. 《JavaScript高级程序设计》作者：Nicholas C.Zakas，人民邮电出版社
 
 
