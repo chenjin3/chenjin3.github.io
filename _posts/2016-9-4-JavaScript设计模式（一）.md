@@ -348,7 +348,7 @@ order500( 3, false, 500 ); // 输出：普通购买, 无优惠券
 order500( 3, false, 0 ); // 输出：手机库存不足
 ```
 
-重构后的代码让请求在三个职责链节点的处理函数中传递，直到请求任务被正确处理。比起之前的实现，代码结构清晰很多。但请求在链条传递中的顺序是写死的，传递请求的代码被耦合在了业务函数之中。如何能让链中的各个节点可以灵活拆分和重组呢？我们需要把处理业务的函数包装进职责链节点。代码如下：
+重构后的代码让请求在三个职责链节点的处理函数中传递，直到请求任务被正确处理。比起之前的实现，代码结构清晰很多。但请求在链条传递中的顺序是写死的，传递请求的代码被耦合在了业务函数之中。如何能让链中的各个节点可以灵活拆分和重组呢？我们需要用Chain构造器把处理业务的函数包装进职责链节点。代码如下：
 
 
     var order500 = function( orderType, pay, stock ){
@@ -408,6 +408,282 @@ order500( 3, false, 0 ); // 输出：手机库存不足
     chainOrder500.passRequest( 2, true, 500 ); // 输出：200 元定金预购，得到50 优惠券
     chainOrder500.passRequest( 3, true, 500 ); // 输出：普通购买，无优惠券
     chainOrder500.passRequest( 1, false, 0 ); // 输出：手机库存不足
+
+## 命令模式
+有时候我们需要向某些对象发送请求，但是并不知道请求的接收者是谁，也不知道被请求的具体操作是什么。此时希望用一种松耦合的方式来设计程序，使得请求的发送方和请求的接收方能消除彼此之间的耦合关系。命令模式将请求包装成一个接收者和一组完成某些特定事情的指令。
+
+这里以一个开关电视机的命令展示面向对象的命令模式的实现：
+
+```
+   var Tv = { //命令接收者
+        open: function () {
+            console.log('打开电视机');
+        },
+        close: function () {
+            console.log('关闭电视机');
+        }
+    };
+    var OpenTvCommand = function (receiver) { //命令对象
+        this.receiver = receiver;  //接收者被保存为对象的属性
+    };
+    OpenTvCommand.prototype.execute = function () { //执行动作
+        this.receiver.open(); //
+    };
+    OpenTvCommand.prototype.undo = function () { //撤销动作
+        this.receiver.close(); //
+    };
+    var setCommand = function (command) { //请求发送者
+        document.getElementById('execute').onclick = function(){
+            command.execute(); //通过命令对象的execute()发出请求
+        };
+        document.getElementById('undo').onclick = function () {
+            command.undo();
+        }
+    };
+    setCommand(new OpenTvCommand(Tv)); //发送请求
+```
+在面向对象设计中, 请求的接收者被当成命令对象的属性保存。而在JavaScript中，命令模式一般使用闭包来实现。接收者被封闭在闭包产生的环境中,仅仅执行回调函数即可。如下所示：
+
+```
+    var Tv = {  
+        open: function () {
+            console.log('打开电视机');
+        },
+        close: function () {
+            console.log('关闭电视机');
+        }
+    };
+    var createCommand = function (receiver) { 
+        var execute = function () {  
+            return receiver.open(); //闭包上下文中的请求的接收者
+        }
+        var undo = function () {
+                return receiver.close();
+        }
+        return {
+            execute: execute,
+            undo: undo
+        }
+    };
+``` 
+
+这里的createCommand命令将工作委托给请求接收者Tv来完成，我们将其称为傻瓜命令。而智能命令中的命令对象会自己处理请求。
+
+### 宏命令
+宏命令是一组命令的集合，通过执行宏命令，可以一次执行一批命令。下面我们来用代码来演示宏命令的执行重放和撤销。假设一个遥控器有4个按钮：批量执行，重放，撤销，全部撤销。按下批量执行按钮，会执行三个命令：关门，打开PC，登录QQ。示例代码如下：
+
+```
+	 //定义三个“智能命令”
+    var closeDoorCommand = {
+        execute: function(callback){
+            var that = this;
+            setTimeout(function(){
+                console.log( '关门' );
+                callback.apply(that);
+            },1000);
+
+        },
+        undo: function() {
+            console.log( '开门' );
+        }
+    };
+    var openPcCommand = {
+        execute: function(callback){
+            console.log( '开电脑' );
+            callback.apply(this);
+        },
+        undo: function() {
+            console.log( '关电脑' );
+        }
+    };
+    var openQQCommand = {
+        execute: function(callback){
+            console.log( '登录QQ' );
+            //callback(context);
+            callback.apply(this);
+        },
+        undo: function() {
+            console.log( '退出QQ' );
+        }
+    };
+```
+
+```
+	 //定义宏命令
+    var MacroCommand = function(){
+        return {
+            commandsList: [], //命令队列
+            i: 0,  //当前命令下标
+            add: function( command ){
+                this.commandsList.push( command );
+            },
+            executeAll: function(){ //同步命令队列执行
+                for ( var i = 0, command; command = this.commandsList[ i++ ]; ){
+                    command.execute();
+                }
+            },
+            execute: function() { //异步命令队列执行
+                var command;
+                if(this.i == this.commandsList.length ) {
+                    this.i = 0;
+                    return;
+                }
+                command = this.commandsList[this.i++];
+                if(command) {
+                    command.execute.call(this,this.execute);
+                }
+            },
+            undo: function () {
+                this.command = this.commandsList.pop();
+                if(this.command) {
+                    this.command.undo();
+                }
+            },
+            undoAll: function() {
+                while(this.command = this.commandsList.pop()) {
+                    this.command.undo();
+                }
+            }
+        }
+    };
+    
+    //将命令设置到对应按钮上（命令的发送者）
+    var macroCommand = MacroCommand();
+    var setCommand = function (command) {
+        document.getElementById('batch').onclick = function () {
+        	   //添加子命令到宏命令集合汇总
+            macroCommand.add( closeDoorCommand );
+            macroCommand.add( openPcCommand );
+            macroCommand.add( openQQCommand );
+            //command.executeAll();
+            command.execute();
+        }
+        document.getElementById('replay').onclick = function () {
+            command.execute();
+        }
+        document.getElementById('undoOne').onclick = function () {
+            command.undo();
+        }
+        document.getElementById('undoAll').onclick = function () {
+            command.undoAll();
+        }
+    }
+    setCommand(macroCommand);
+```
+
+宏命令是命令模式与组合模式联用的产物。关于组合模式的知识，参见[组合模式](#user-content-组合模式)。这里我们也演示了宏命令的replay功能，命令的重放常被应用在日志系统中。在日志系统中，每个命令在执行的同时会被记录到文件中，当系统出现问题时，可以从文件中重新加载这些命令并以正确的次序执行。
+
+没有请求接收者的智能命令，在代码结构上和策略模式相同，只是意图不同，下面让我们看一下策略模式。
+
+## 策略模式
+策略模式用于封装一系列的算法，将算法的使用与实现分离开。
+
+在前端开发中写表单是最常见的任务之一，我们在写表单的时候需要对用户的输入进行校验。一个简单的表单验证如下图所示。
+![表单验证](/images/designPattern/policy.png)
+直接实现表单校验的代码如下：
+
+```
+<form action="http://xxx.com/register" id="registerForm" method="post">
+    用户名：<input type="text" name="userName" />
+    密码：<input type="text" name="password" />
+    手机号：<input type="text" name="phoneNumber"/>
+    <button>提交</button>
+</form>
+
+<script>
+  var registerForm = document.getElementById( 'registerForm' );
+    registerForm.onsubmit = function(){
+        if ( registerForm.userName.value === '' ){
+            alert ( '用户名不能为空' );
+            return false;
+        }
+        if ( registerForm.password.value.length < 6 ){
+            alert ( '密码长度不能少于6位' );
+            return false;
+        }
+        if(!/(^1[3|5|8][0-9]{9}$)/.test( registerForm.phoneNumber.value)){
+            alert ( '手机号码格式不正确' );
+            return false;
+        }
+    }
+</script>    
+```
+registerForm.onsubmit比较复杂，包含了很多条件语句，而且缺乏弹性，如果想增加或修改校验规则，都需要深入函数的内部实现，违反开放封闭原则。这样的校验算法复用性也比较差，其他表单也需要校验时，只能复制粘贴校验逻辑。策略模式可以解决这些问题。
+
+### 策略模式重构表单验证
+用策略模式重构表单验证的实现，首先是将算法封装为策略对象，该策略对象中包含多个策略函数。如下所示：
+
+```
+ var strategies = {
+        isNonEmpty: function( value, errorMsg ){ // 不为空
+            if ( value === '' ){
+                return errorMsg ;
+            }
+        },
+        minLength:function(value,length,errorMsg){//限制最小长度
+            if ( value.length < length ){
+                return errorMsg;
+            }
+        },
+        isMobile: function( value, errorMsg ){ // 手机号码格式
+            if ( !/(^1[3|5|8][0-9]{9}$)/.test( value ) ){
+                return errorMsg;
+            }
+        }
+    };
+```
+之后，我们需要实现一个上下文对象(Validator类)，它负责接收用户的请求并委托给strategy对象。用户可以通过validator对象为表单配置校验规则，并启动校验，代码如下：
+
+```
+//向Context发请求的客户端
+    var registerForm = document.getElementById( 'registerForm' );
+    registerForm.onsubmit = function(){
+        var errorMsg = validateFunc();//如果errorMsg有确切的返回值，说明未通过校验
+        if ( errorMsg ){
+            alert ( errorMsg );
+            return false; // 阻止表单提交
+        }
+    };
+    var validateFunc = function(){
+        var validator = new Validator(); // 创建一个validator对象
+        //添加一些校验规则
+        validator.add( registerForm.userName, 'isNonEmpty', '用户名不能为空' );
+        validator.add(registerForm.password, 'minLength:6','密码长度不能少于6 位');
+        validator.add( registerForm.phoneNumber, 'isMobile','手机号码格式不正确');
+        var errorMsg = validator.start(); // 启动校验获得校验结果
+        return errorMsg; // 返回校验结果
+    }
+```
+
+**说明:**'minLength:6'是一个以冒号隔开的字符串。冒号前面的minLength代表    的 strategy策略函数,  后面的数字 6 表示在在校验过程中所所需的一些参数。如果这个字字符串中不包含冒号,说明校验过程中不需要额外的参数, 如'isNonEmpty'。
+
+上下文对象Validator类的实现如下：
+
+```
+    var Validator = function(){
+        this.cache = []; // 保存校验规则
+    };
+    Validator.prototype.add = function( dom, rule, errorMsg ){
+        var ary = rule.split( ':' ); // 把strategy 和参数分开
+        this.cache.push(function(){ //把校验的步骤用空函数包装起来，并且放入cache
+            var strategy = ary.shift(); // 用户挑选的strategy
+            ary.unshift( dom.value ); // 把input 的value 添加进参数列表
+            ary.push( errorMsg ); // 把errorMsg 添加进参数列表
+            return strategies[ strategy ].apply( dom, ary);//委托给策略函数
+        });
+    };
+    Validator.prototype.start = function(){
+        for ( var i = 0, validatorFunc; validatorFunc = this.cache[ i++ ]; ){
+            var msg = validatorFunc(); // 开始校验，并取得校验后的返回信息
+            if ( msg ){ // 如果有确切的返回值，说明校验没有通过
+                return msg;
+            }
+        }
+    };
+```
+
+使用策略模式重构代码之后,我们仅仅通过“配置”的方式就可以完成一个表单的校验, 这些校验规则也可以复用在程序的任何地方,还能作为插件的形式,方便地放到其他项目中。 
+
 
 
 ## 参考资料
