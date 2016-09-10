@@ -36,8 +36,8 @@ published: true
 * [工厂模式](#section-9)
 * [迭代器模式](#section-13)
 * [职责链模式](#section-15 "职责链模式与电商预购应用")
-* [命令模式](#user-content-命令模式)
-* [策略模式](#user-content-策略模式)
+* [命令模式](#section-16)
+* [策略模式](#section-18)
 
 ### 包装模式
 
