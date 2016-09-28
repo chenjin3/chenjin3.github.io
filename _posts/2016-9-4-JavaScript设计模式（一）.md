@@ -587,7 +587,7 @@ order500( 3, false, 0 ); // 输出：手机库存不足
     用户名：<input type="text" name="userName" />
     密码：<input type="text" name="password" />
     手机号：<input type="text" name="phoneNumber"/>
-    <button>提交</button>
+    <button id="submitBtn" type="submit">提交</button>
 </form>
 
 <script>
