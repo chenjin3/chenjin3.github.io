@@ -424,6 +424,95 @@ facade();
 外观模式为一组子系统提供一个简单遍历的访问入口，隔离了客户与复杂子系统之间的联系，客户不用去了解子系统的细节。因此它符合最少知识原则。
 
 ## 观察者模式
+观察者模式又叫发布订阅模式，它定义对象间的一种一对多的依赖关系，当一个对象的状态发生变化时，所有依赖于它的对象都将得到通知。在Javascript开发中，我们一般用事件模型来代替传统的发布订阅模式。在异步编程中使用观察者模式，我们就无需过多关注对象在异步运行期间的内部状态，只需要订阅感兴趣的事件。这使得一个对象不用再显示的调用另一个对象的某个接口，发布订阅模式让两个对象松耦合的联系在一起。
+
+#### DOM事件
+只要曾经在DOM节点上绑定过事件函数，那么我们就曾经使用过观察者模式，例如：
+
+```
+document.body.addEventListener('click', function() {
+	alert('hello');
+}, false); // false表示在冒泡阶段调用事件处理程序
+document.body.click(); //模拟用户点击
+```
+这里订阅document.body的click事件，当body节点被点击时，body节点便会向订阅者发布这个消息。
+
+### 观察者模式的通用实现
+让我们看一个现实中的例子。小明最新想买房，于是他跑到一个售楼处。却被告知新盘已经售罄，但过段时间还有尾盘推出。小明怅然离开，走之前把电话号留给了售楼处小姐。售楼MM答应他，新盘已退出就马上发信息通知小明。小李、小红、小强等刚需群众也是一样，他们的电话号码都被挤在了售楼处的花名册上。在这个例子中，小明、小红等购买者都是订阅者，他们订阅了房子开售的消息，售楼处作为发布者，会在合适的时候遍历花名册上的电话号码，依次给购房者发布消息。
+
+首先，让我们来把发布订阅的功能抽象出来，实现event对象：
+
+```
+var event = {
+   clientList: {}, //缓存列表，存放订阅者的回调函数 {key1: [fn1,fn2,...], ...}
+   listen: function( key, fn ){ //监听事件  key:事件名，fn:订阅者的回调函数
+       if ( !this.clientList[ key ] ){
+           this.clientList[ key ] = [];
+       }
+       this.clientList[ key ].push( fn ); // 订阅的消息添加进缓存列表
+   },
+   trigger: function(){ //触发事件
+       var key = Array.prototype.shift.call( arguments ), //取出事件类型
+           fns = this.clientList[ key ]; //注册到特定事件上的回调函数集合
+       if ( !fns || fns.length === 0 ){ // 如果没有绑定对应的事件
+           return false;
+       }
+       for( var i = 0, fn; fn = fns[ i++ ]; ){//执行注册到特定事件的所有回调函数
+           fn.apply( this, arguments ); // 推模型： arguments 是trigger 时带上的参数
+       }
+   },
+   remove : function( key, fn ){//取消订阅的事件
+       var fns = this.clientList[ key ];
+       if ( !fns ){ // 如果key 对应的消息没有被人订阅，则直接返回
+           return false;
+       }
+       if ( !fn ){ // 如果没有传入具体的回调函数，表示需要取消key 对应消息的所有订阅
+           fns && ( fns.length = 0 );
+       }else{
+           for ( var l = fns.length - 1; l >=0; l-- ){ // 反向遍历订阅的回调函数列表
+               var _fn = fns[ l ];
+               if ( _fn === fn ){
+                   fns.splice( l, 1 ); // 删除订阅者的回调函数
+               }
+           }
+       }
+   }
+};
+```
+
+然后在定义一个installEvent函数，这个函数可以给对象动态的安装发布订阅功能:
+
+```
+var installEvent = function( obj ){
+   for ( var fn in event ){
+       obj[ fn ] = event[ fn ];
+   }
+};
+```
+最后来测试一下，我们给售楼处对象salesOffices动态的增加发布订阅功能：
+
+```
+var salesOffices = {};
+installEvent( salesOffices );
+salesOffices.listen( 'squareMeter88', function( price ){ // 小明订阅消息
+   console.log( 'to 小明： 价格= ' + price );
+});
+salesOffices.listen( 'squareMeter88', function( price ){ // 小李订阅消息
+   console.log( 'to 小李： 价格= ' + price );
+});
+salesOffices.listen( 'squareMeter100', function( price ){ // 小红订阅消息
+   console.log( 'to 小红：价格= ' + price );
+});
+salesOffices.listen( 'squareMeter88', fn1 = function( price ){ //小强订阅的消息
+   console.log( 'to 小强: 价格= ' + price );
+});
+
+salesOffices.remove('squareMeter88', fn1); //取消小强的订阅
+salesOffices.trigger( 'squareMeter88', 2000000 ); //小明，小李将收到消息
+salesOffices.trigger( 'squareMeter100', 3000000 );//小红将收到消息
+```
+
+
 
 ## 中介者模式
 
