@@ -426,7 +426,7 @@ facade();
 ## 观察者模式
 观察者模式又叫发布订阅模式，它定义对象间的一种一对多的依赖关系，当一个对象的状态发生变化时，所有依赖于它的对象都将得到通知。在Javascript开发中，我们一般用事件模型来代替传统的发布订阅模式。在异步编程中使用观察者模式，我们就无需过多关注对象在异步运行期间的内部状态，只需要订阅感兴趣的事件。这使得一个对象不用再显示的调用另一个对象的某个接口，发布订阅模式让两个对象松耦合的联系在一起。
 
-#### DOM事件
+### DOM事件
 只要曾经在DOM节点上绑定过事件函数，那么我们就曾经使用过观察者模式，例如：
 
 ```
@@ -514,7 +514,193 @@ salesOffices.trigger( 'squareMeter100', 3000000 );//小红将收到消息
 观察者模式在实际开发中非常有用。既可以用在异步编程中，也可以帮助我们完成更松耦合的代码编写。从架构上来看，无论是MVC还是MVVM，都少不了观察者模式的参与，可以说事件驱动模型是Javascript语言的核心功能。
 但观察者模式的大量使用也会带来一些问题，一是订阅者的创建（事件监听函数）本身要消耗一定的事件和内存。二是观察者模式弱化了对象间的联系，对象和对象之间的必要联系呗深埋在背后，可能导致程序难以跟踪维护和理解。
 
+利用观察者模式还可以实现中介者模式，即将中介者实现为订阅者，其他对象作为发布者。在观察者模式中一般发布者和订阅者是一对多的关系，在中介者模式中，中介者和其他对象主体也是一对多的关系。
+
 ## 中介者模式
+面向对象的应用程序由很多对象组成，所有对象按照某种关系来通信。当对象越来越多，他们之间的关系也越来越复杂，难免行程网状的交叉引用。当我们改变或删除其中一个对象的时候，很可能需要通知所有引用到它的对象。面向对象设计鼓励将行为分布到各个独享中，把对象划分成更小的粒度，有助于提高对象的可复用性。但由于这些细粒度对象之间的联系激增，又有可能会反过来降低系统的可维护性。
+
+中介者模式的作用就是解除对象与对象之间的紧耦合关系。增加一个中介者对象后，所有的相关对象都通过中介者对象来通信。当一个对象发生改变时，只需要通知中介者对象即可。中介者模式使系统中各对象之间耦合降低，使得网状的多对多关系变成了相对简单的一对多关系。
+
+### 应用举例：购买商品
+假设我们在编写一个手机购买的页面，在购买流程中，可以选择颜色、内存，输入购买数量，同时页面中有三个展示区域，分别向用户展示刚刚选好的颜色、内存和数量。还有一个按钮动态显示下一步的操作，我们需要检查符合条件的手机对应的库存，如果库存少于这次的购买数量，按钮将被禁用并显示库存不足，反之按钮可以点击并显示放入购物车。DOM结构如下：
+
+```
+选择颜色：<select id="colorSelect">
+		<option value="">请选择</option>
+		<option value="red">红色</option>
+		<option value="blue">蓝色</option>
+	</select>
+选择内存：<select id="memorySelect">
+		<option value="">请选择</option>
+		<option value="32G">32G</option>
+		<option value="16G">16G</option>
+	</select>
+输入购买量：<input type="text" id="numberInput"/><br/><br/>
+您选择了颜色：<div id="colorInfo"></div><br/>
+您选择的内存 : <div id="memoryInfo"></div><br/>
+您输入了数量: <div id="numberInfo"></div><br/>
+<button id="nextBtn" disabled="true">请选择手机颜色和购买数量</button>
+```
+这个需求比较容易实现，假设我们已经从后台获取了所有类型手机的库存量，代码如下：
+
+```
+var colorSelect = document.getElementById( 'colorSelect'),
+memorySelect = document.getElementById( 'memorySelect'),
+numberInput = document.getElementById( 'numberInput'),
+colorInfo = document.getElementById( 'colorInfo'),
+numberInfo = document.getElementById( 'numberInfo'),
+memoryInfo = document.getElementById( 'memoryInfo'),
+nextBtn = document.getElementById( 'nextBtn');
+var goods = { //手机库存
+    "red|32G": 3,
+    "blue|32G": 1,
+    "blue|16G": 6
+};
+colorSelect.onchange = function() {
+    var color = colorSelect.value, //颜色
+     memory = memorySelect.value, //内存
+     number = Number(numberInput.value),//数量
+     stock = goods[ color + '|' + memory ];//库存
+    colorInfo.innerHTML = color;//更新颜色展示
+    memoryInfo.innerHTML = memory;//更新内存展示
+    numberInfo.innerHTML = number;//更新购买数量展示
+    //更新下一步按钮
+   if(validate(color, memory, number, stock)) {
+       nextBtn.disabled = false;
+       nextBtn.innerHTML = '放入购物车';
+   }
+};
+
+memorySelect.onchange = function() {
+  var color = colorSelect.value,
+      memory = memorySelect.value,
+      number = Number(numberInput.value),
+      stock = goods[color + '|' + memory];
+  colorInfo.innerHTML = color;
+  memoryInfo.innerHTML = memory;
+  numberInfo.innerHTML = number;
+  if(validate(color, memory, number, stock)) {
+      nextBtn.disabled = false;
+      nextBtn.innerHTML = '放入购物车';
+  }
+}
+
+numberInput.oninput = function(){
+    var color = colorSelect.value, 
+      memory = memorySelect.value,
+      number = Number(this.value), 
+      stock = goods[color + '|' + memory]; 
+    colorInfo.innerHTML = color;
+    memoryInfo.innerHTML = memory;
+    numberInfo.innerHTML = number;
+    if(validate(color, memory, number, stock)) {
+        nextBtn.disabled = false;
+        nextBtn.innerHTML = '放入购物车';
+    }
+}
+/**
+ * @param color
+ * @param number
+ * @param stock
+ * @returns {boolean}
+ */
+function validate(color, memory, number, stock) {
+    if ( !color ){
+        nextBtn.disabled = true;
+        nextBtn.innerHTML = '请选择手机颜色';
+        return false;
+    }
+    if ( !memory ){
+        nextBtn.disabled = true; nextBtn.innerHTML = '请选择内存大小';
+        return false;
+    }
+    if (!Number.isInteger(number) || number <= 0) {
+        nextBtn.disabled = true;
+        nextBtn.innerHTML = '请选择正确的购买数量';
+        return false;
+    }
+    if ( number > stock ){
+        nextBtn.disabled = true;
+        nextBtn.innerHTML = '库存不足';
+        return  false;
+    }
+    return true;
+}
+```
+虽然目前完成了代码编写，但代码的耦合性很强，在每个监听函数中需要更新其他四个节点对象（颜色显示，内存显示，数量显示和下一步按钮）的状态，节点对象都是耦合在一起的，改变或者增加任何一个节点对象，所要修改的代码很多。而且每个输入节点的状态变化监听函数中的代码完全是重复的。
+
+下面我们引入中介者对象来重构这段代码。
+
+```
+var goods = {
+   "red|32G": 3,
+   "red|16G": 0,
+   "blue|32G": 1,
+   "blue|16G": 6
+};
+var colorSelect = document.getElementById( 'colorSelect' ),
+   memorySelect = document.getElementById( 'memorySelect' ),
+   numberInput = document.getElementById( 'numberInput' ),
+   colorInfo = document.getElementById( 'colorInfo' ),
+   memoryInfo = document.getElementById( 'memoryInfo' ),
+   numberInfo = document.getElementById( 'numberInfo' ),
+   nextBtn = document.getElementById( 'nextBtn' );
+var mediator = (function () {
+   return {
+       changed: function (obj) {
+           var color = colorSelect.value,
+                   memory = memorySelect.value,
+                   number = Number(numberInput.value),
+                   stock = goods[ color + '|' + memory ];
+           if ( obj === colorSelect ){
+               colorInfo.innerHTML = color;
+           }else if ( obj === memorySelect ){
+               memoryInfo.innerHTML = memory;
+           }else if ( obj === numberInput ){
+               numberInfo.innerHTML = number;
+           }
+           if ( !color ){
+               nextBtn.disabled = true;
+               nextBtn.innerHTML = '请选择手机颜色';
+               return ;
+           }
+           if ( !memory ){
+               nextBtn.disabled = true; nextBtn.innerHTML = '请选择内存大小';
+               return ;
+           }
+           if (!Number.isInteger(number) || number <= 0) {
+               nextBtn.disabled = true;
+               nextBtn.innerHTML = '请选择正确的购买数量';
+               return ;
+           }
+           if ( number > stock ){
+               nextBtn.disabled = true;
+               nextBtn.innerHTML = '库存不足';
+               return;
+           }
+           nextBtn.disabled = false;
+           nextBtn.innerHTML = '放入购物车';
+       }
+   }
+})();
+
+colorSelect.onchange = function(){
+   mediator.changed( this );
+};
+memorySelect.onchange = function(){
+   mediator.changed( this );
+};
+numberInput.oninput = function(){
+   mediator.changed( this );
+};
+```
+重构之后，所有的节点对象只和中介者通信。当下拉选择框colorSelect、memorySelect和文本输入框numberInput的发生了事件行为时，他们仅仅通知中介者他们改变了，同时把自身当做参数传入中介者，以便中介者辨别是谁发生了变化。剩下的所有事情都交给中介者对象来完成，这样一来，无论是修改还是新增节点，都只需要改动中介者对象里的代码。
+
+### 小结
+如果对象间的耦合性太高，一个对象发生改变后，难免会影响到其他的对象。中介者模式是迎合最少知识原则的一种实现。引入中介者模式后，对象之间几乎不知道彼此的存在，他们只能通过中介者对象来互相影响对方。中介者模式使各个对象之间得以解耦，以中介者和对象之间的一对多关系取代了对象之前的网状多对多关系。各个对象只需关注自身功能的实现，对象间的交互关系交给了中介者对象来实现和维护。
+
+另一方面，引入中介者之后，对象直线交互的复杂性，转移成了中介者对象的复杂性，使得中介者对象经常是一个难以维护的巨大的对象。所以我们也需要权衡中介者负责实现哪些对象间的联系。
+一般来说，如果对详见的复杂耦合确实导致调用和维护出现了困难，而且这些耦合随着项目的变化呈指数增长，那我们就可以考虑用中介者模式来重构代码。
 
 ## 模板方法模式
 
