@@ -7,7 +7,7 @@ published: true
 本文承接上一篇[JavaScript设计模式（一）](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/)，继续介绍其他常用的设计模式。
 
 ## 索引
-### JavaScript设计模式(一) 
+### JavaScript设计模式(一)
 
 * [原型模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#section-7)
 * [工厂模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#section-9)
@@ -222,7 +222,7 @@ InboxProxy.prototype = {
 	search: function(...) {
 		return this._init() && search(...);
 	},
-	...	
+	...
 }
 
 ```
@@ -341,7 +341,7 @@ var formSubmit = function(){
    }
    ajax('http://xxx.com/login', param);
 };
- 
+
  submitBtn.onclick = function(
  			formSubmit();
  }
@@ -353,7 +353,7 @@ var formSubmit = function(){
 Function.prototype.before = function( beforefn ){	var __self = this;
  	return function(){		if ( beforefn.apply( this, arguments ) ){
 			// beforefn返回errorMsg的情况直接return,不再执行后面的原函数
-		  	return;	}	return __self.apply( this, arguments ); 
+		  	return;	}	return __self.apply( this, arguments );
 	}}
 
 var formSubmit = function(){
@@ -364,7 +364,7 @@ var formSubmit = function(){
    }
    ajax('http://xxx.com/login', param);
 };
-formSubmit = formSubmit.before( validateFunc );submitBtn.onclick = function(){ 
+formSubmit = formSubmit.before( validateFunc );submitBtn.onclick = function(){
 	formSubmit();}
 ```
 这里我们改写了Function.prototype.before函数，如果beforefn函数返回的errorMsg不为空，则直接返回，不再执行后面的原函数。这样校验输入和提交表单的代码就完全分离开了，有利于分开维护这两个函数。formSubmit=formSubmit.before( validateFunc )这句代码,如同把校验规则动态接在formSubmit函数之前,validateFunc成为一个即插即用的函数。
@@ -377,9 +377,9 @@ formSubmit = formSubmit.before( validateFunc );submitBtn.onclick = function(){
 例如我们的网站先前使用了百度地图来显示一个地图，示例代码如下：
 
 ```
-var baiduMap = { 
-	show: function(){		console.log( '开始渲染百度地图' ); 
-	}};var renderMap = function( map ){	if ( map.show instanceof Function ){		map.show(); 
+var baiduMap = {
+	show: function(){		console.log( '开始渲染百度地图' );
+	}};var renderMap = function( map ){	if ( map.show instanceof Function ){		map.show();
 	}};
 renderMap( baiduMap ); //输出：开始渲染百度地图
 ```
@@ -588,10 +588,10 @@ memorySelect.onchange = function() {
 }
 
 numberInput.oninput = function(){
-    var color = colorSelect.value, 
+    var color = colorSelect.value,
       memory = memorySelect.value,
-      number = Number(this.value), 
-      stock = goods[color + '|' + memory]; 
+      number = Number(this.value),
+      stock = goods[color + '|' + memory];
     colorInfo.innerHTML = color;
     memoryInfo.innerHTML = memory;
     numberInfo.innerHTML = number;
@@ -781,7 +781,7 @@ Beverage.prototype.init被即称为模板方法，该方法中封装了子类的
 
 ### 模板方法模式的使用场景
 模板方法模式常被架构师用于搭建项目的框架，架构师订好了框架的骨架，程序员继承框架的结构之后，负责具体的业务实现。比如我们在构建一系列的UI组件，这些组件的构建过程一般如下所示：
-1. 初始化一个div容器 
+1. 初始化一个div容器
 2. 通过ajax请求拉取相应数据
 3. 把数据渲染到div容器里面，完成组件的构造
 4. 通知用户组件渲染完毕
@@ -792,9 +792,271 @@ Beverage.prototype.init被即称为模板方法，该方法中封装了子类的
 模板方法模式是基于继承的一种设计模式，父类封装了子类的算法框架或方法的执行顺序，子类继承父类之后，父类通知子类执行这些方法，好莱坞原则很好的诠释了这种设计技巧，即高层组件调用底层组件。
 
 ## 组合模式
-组合模式将对象组合成树形结构，以表示“部分-整体”的层次结构。组合模式还可以通过对象的多态性表现，使得用户对单个对象和组合对象的使用具有一致性。
+组合模式将对象组合成树形结构，以表示“部分-整体”的层次结构。组合模式还可以通过对象的多态性，使得用户对单个对象和组合对象的使用具有一致性。
+
+在命令模式中我们介绍过[宏命令](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#section-17)的结构和作用，宏命令对象包括一组具体的子命令，不管是宏命令对象，还是子命令组成了一个树形结构。其中宏命令就是组合对象，而子命令是叶对象。在宏命令的execute方法里，并不执行真正的操作，而是遍历它所包含的叶对象，把真正的execute请求委托给这些叶对象。
+
+组合模式最大的优点在于可以一致地对待组合对象和基本对象。宏命令和基本命令的透明性使得发起请求的客户不用顾忌树中组合对象和叶对象的区别。但组合对象可以拥有子节点，叶对象下面就没有子节点。因而用户可能发生一些误操作，比如试图向叶对象中添加子节点。为了避免这种情况，通常我们给叶对象也增加add方法，并在调用这个方法时抛出一个异常来及时提醒客户。下面我们来看一个组合模式的应用例子。
+### 应用实例：扫描文件夹
+文件夹和文件的关系，非常适合用组合模式来描述。文件夹里既可以包含文件，又可以包含其他文件夹。在添加一批文件的操作过程中，客户不用分辨它们到底是文件还是文件夹。运用组合模式之后，扫描整个文件夹的操作也变得轻而易举，我们只需要操作树的最顶端对象。            
+```
+//文件扫描与删除
+var Folder = function( name ){
+        this.name = name;
+        this.parent = null; //增加this.parent 属性
+        this.files = [];
+};
+Folder.prototype.add = function( file ){
+        file.parent = this; //设置父对象
+        this.files.push( file );
+};
+Folder.prototype.scan = function(){
+      console.log( '开始扫描文件夹: ' + this.name );
+      for ( var i = 0, file, files = this.files; file = files[ i++ ]; ){
+        file.scan();
+      }
+};
+Folder.prototype.remove = function(){
+    if ( !this.parent ){ //根节点或者树外的游离节点
+      return;
+      }
+    for ( var files = this.parent.files, l = files.length - 1; l >=0; l-- ){
+      var file = files[ l ];
+      if ( file === this ){
+        files.splice( l, 1 );
+      }
+    }
+};
+var File = function( name ){
+        this.name = name;
+        this.parent = null;
+        };
+File.prototype.add = function() {  //为和组合对象接口保持一致
+        throw new Error( '不能添加在文件下面' );
+        };
+File.prototype.scan = function(){
+        console.log( '开始扫描文件: ' + this.name );
+        };
+File.prototype.remove = function(){
+    if ( !this.parent ){ //根节点或者树外的游离节点
+        return;
+    }
+    for ( var files = this.parent.files, l = files.length - 1; l >=0; l-- ){
+          var file = files[ l ];
+          if ( file === this ){
+          files.splice( l, 1 );
+      }
+    }
+};
+
+var folder = new Folder( '学习资料' );
+var folder1 = new Folder( 'JavaScript高级程序设计' );
+var file1 = new Folder ( '深入浅出Node.js' );
+
+folder1.add( new File( 'JavaScript设计模式与开发实践' ) );
+folder.add( folder1 );
+folder.add( file1 );
+folder1.remove(); //移除文件夹
+folder.scan();//扫描文件夹
+```
+
+组合模式可以让我们使用树形方式创建对象的结构。我们可以把相同的操作应用在组合对象和单个对象上。然而，系统中的每个对象看起来都和其他对象差不多。他们的区别只有在运行时才会显现出来，有些时候这会使代码难以理解。
 
 ## 状态模式
+状态模式是状态机的实现之一，它允许一个对象在其内部状态改变时改变它的行为，对象看起来似乎修改了它的类。状态模式的关键是把事物的每种状态都封装成单独的类，跟此种状态有关的行为都被封装在这个类的内部。当事物的状态机变迁时，只需要在上下文（Context对象）中，把这个请求委托给当前的状态对象即可。该状态对象会负责执行它自身的行为。而在JavaScript这种“无类”的语言中，状态对象不必从类中创建出来，也不需要事先让Context对象持有所有状态对象。只需要用Function.prototype.call之类的方法直接把请求委托给状态机对象来执行。
+
+下面给出一个状态模式实现的可隐藏的菜单栏组件的例子。管理控制台一般都有一个居左的侧边栏菜单，为了让主要区域能全屏显示，侧边栏菜单有一个隐藏显示按钮。当菜单显示的时候，按下按钮，菜单会切换到隐藏状态；再按一次按钮，菜单又切换到显示状态。同一个按钮，在不同的状态下，表现出来的行为是不一样的。代码如下：
+
+```
+<div id="left-menu">我是侧边栏菜单</div>
+<script>
+var Menu = function() {  //Contxet对象
+  this.currState = FSM.show;
+  this.button = null;
+}
+Menu.prototype.init = function() {
+    this.$DOM = document.getElementById('left-menu');
+    var button = document.createElement('button');
+    self = this;
+    button.innerHTML = "单击隐藏菜单";
+    this.button = document.body.appendChild(button);
+    this.button.onclick = function() {
+      self.currState.buttonWasPressed.call(self);//把请求委托给FSM状态机对象,并将上下文对象传入
+    };
+};
+var FSM = { //Finite State Machine
+  show: {
+    buttonWasPressed: function() {
+        console.log('隐藏侧边栏菜单');
+        this.$DOM.style.display = 'none';
+        this.button.innerHTML = "单击显示菜单";//this是上下文对象Menu
+        this.currState = FSM.hide;
+    }
+  },
+  hide: {
+      buttonWasPressed:function() {
+          console.log('显示侧边栏菜单');
+          this.$DOM.style.display = 'block';
+          this.button.innerHTML = "单击隐藏菜单";
+          this.currState = FSM.show;
+      }
+    }
+};
+var menu = new Menu();
+menu.init();
+</script>
+```
+
+状态模式定义了状态与行为之间的关系，并将它们封装在一个类/函数里。通过增加新的状态类/状态函数，很容易增加新的状态和转换。也避免了Context对象的无限膨胀，状态切换的逻辑被分布在状态类/函数中，也就避免了Context对象中过多的条件分支。而且用对象代替字符串来记录当前的状态，也使得状态的切换一目了然。
+
+在实际的开发中，很多场景都可以用状态机来模拟。比如一次ajax请求有请求未初始化、服务器连接已建立、请求以接收、请求处理中、请求已完成5个状态。一个格斗游戏任务有攻击、防御、跳跃、跌倒等状态。React框架将UI组件抽象成为一个状态机，组件根据状态的变化自动渲染DOM。
 
 ## 享元模式
+享元（flyweight）模式是一种用于性能优化的模式，它在不同场景中共享轻量级的对象，以减少系统中对象的数量，其核心是运用共享技术解决大量类似对象带来的内存占用过高的问题。
 
+享元模式将对象的属性划分为内部状态与外部状态。内部状态存储于对象内部，独立于具体的场景，通常不会改变；而外部状态取决于具体的场景，根据场景的变化，外部状态不能被共享。我们可以把所有内部状态相同的对象都指定为同一个共享对象，以减少系统中的对象。而外部状态可以从对象身上剥离出来，并存储在外部。
+剥离了外部状态的对象成为共享对象，外部状态在必要时被传入共享对象来组装成一个完整的对象。虽然组装外部状态成为一个完整的对象的过程需要花费一定的时间，但却可以大大减少系统中对象的数量。因此，享元模式是一种用时间换空间的优化模式。
+
+让我们来看一个例子。一个内衣淘宝店有50种男士内衣，50中女士内衣。为了推销产品，需要一些模特来穿上这些内衣拍广告照片。第一种方式是招聘50个男模特和50个女模特，让他们每人分别穿上一件内衣拍照。这种不使用享元模式的方案代码如下：
+
+```
+var Model = function( sex, underwear){
+    this.sex = sex;
+    this.underwear= underwear;
+};
+Model.prototype.takePhoto = function(){
+    console.log( 'sex= ' + this.sex + ' underwear=' + this.underwear);
+};
+for ( var i = 1; i <= 50; i++ ){
+    var maleModel = new Model( 'male', 'underwear' + i );
+    maleModel.takePhoto();
+};
+for ( var j = 1; j <= 50; j++ ){
+    var femaleModel= new Model( 'female', 'underwear' + j );
+    femaleModel.takePhoto();
+};
+```
+要得到一张照片，每次都需要传入sex和underwear参数。现在一共50种男内衣和50种女内衣，所以一共会产生100个对象。为了优化性能，我们需要减少对象的创建。第二种方案是找一个男模特和一个女模特，分别穿上50种不同的内衣拍照。也就是将underwear参数从构造函数中移除，构造函数只接收sex参数，优化代码如下：
+
+```
+var Model = function( sex ){
+    this.sex = sex;
+};
+Model.prototype.takePhoto = function(){
+    console.log( 'sex= ' + this.sex + ' underwear=' + this.underwear);
+};
+var maleModel = new Model( 'male' ),
+    femaleModel = new Model( 'female' );
+
+for ( var i = 1; i <= 50; i++ ){
+    maleModel.underwear = 'underwear' + i;
+    maleModel.takePhoto();
+};
+for ( var j = 1; j <= 50; j++ ){
+    femaleModel.underwear = 'underwear' + j;
+    femaleModel.takePhoto();
+};
+```
+优化之后，只需要两个对象便完成了同样的功能。这个例子初步展示了享元模式的力量，但还有两个问题：
+1. 在上例中我们通过构造函数显式new出男女两个model对象。但在某些场景下可能并不是在一开始就需要实例化所有共享对象。
+2. 给model对象手动设置了underwear外部状态。当外部状态较多时，这不是一个好的方式。
+
+我们可以通过一个对象工厂来解决第一个问题，只有当共享对象被真正需要时，它才从工厂中被创建出来。对于第二个问题，可以用一个管理器来记录的外部状态，使这些外部状态通过某个钩子和共享对象联系起来。
+
+### 应用实例： 多文件上传
+![多文件上传Demo](/images/flyweight.png)
+
+为了支持同时上传多个文件，如果每个文件都对应一个JavaScript上传对象的创建，程序中会同时new出成百上千个upload对象，造成内存的而浪费。这里我们可以使用享元模式将同一种上传方式的文件上传任务交给一个共享对象即可。为了简化示例程序，这里只保留upload对象的删除文件功能(Upload.prototyp.delFile)。由于我们只用一种上传方式上传文件，这里的upload对象没有内部状态，待上传文件的实际大小，文件列表项的DOM节点等属性均可以作为外部状态。简化的Upload构造器代码如下：
+
+```
+var Upload = function() {};
+Upload.prototype.delFile = function(id) {
+  //把当前id对应的对象的外部状态组装到共享对象中
+  uploadManager.setExternalState(id, this);
+  if( this.fileSize < 3000) {
+    return this.dom.parentNode.removeChild(this.dom);
+  }
+  if(window.confirm('确定要删除该文件吗?' + this.fileName)) {
+    return this.dom.parentNode.removeChild(this.dom);
+  }
+}
+```
+在开始删除文件之前，先读取文件的实际大小，而文件的实际大小被存储在外部管理器uploadManager中。这里通过uploadManager.setExternalState方法给共享对象设置正确的fileSize。
+我们使用一个单例工厂来创建享元对象：
+
+```
+var UploadFactory = (function(){
+    var uplodObj;
+    return {
+      create: function() {
+        if(uploadObj) {
+          return uploadObj;
+        }
+        return uploadObj = new Upload();
+      }
+    }
+  })();
+```
+然后通过外部管理器封装外部状态，它负责向UploadFactory提交创建对象的请求，并用一个uploadDatabase对象保存upload对象的外部状态，以便在程序运行过程中给upload共享对象设置外部状态，代码如下：
+
+```
+var uploadManager = (function(){
+    var uploadDatabase = {};   //upload对象的外部状态仓库
+    return {
+        add: function( id, fileName, fileSize ){
+            var flyWeightObj = UploadFactory.create();//提交创建对象的请求
+            var dom = document.createElement( 'div' );
+            dom.innerHTML =
+                    '<span>文件名称:'+ fileName +', 文件大小: '+ fileSize +'</span>' +
+                    '<button class="delFile">删除</button>';
+            dom.querySelector( '.delFile' ).onclick = function(){
+                flyWeightObj.delFile( id );
+            };
+            document.body.appendChild( dom );
+            uploadDatabase[ id ] = { //初始化外部状态仓库
+                fileName: fileName,
+                fileSize: fileSize,
+                dom: dom
+            };
+            return flyWeightObj ;
+        },
+        setExternalState: function( id, flyWeightObj ){ //给共享对象设置外部状态
+            var uploadData = uploadDatabase[ id ];
+            for ( var i in uploadData ){
+                flyWeightObj[ i ] = uploadData[ i ];
+            }
+        }
+    }
+})();
+```
+然后是开始触发上传动作的startUpload函数。用户选择的文件列表被组合成一个数组files传递给startUpload函数，该函数会遍历files数组来创建对应的upload对象。代码如下：
+
+```
+var id = 0;
+window.startUpload = function(files) {
+  for ( var i = 0, file; file = files[ i++ ]; ){
+      var uploadObj = uploadManager.add( ++id, file.fileName, file.fileSize );
+  }
+}
+```
+最后调用startUpload函数测试一下：
+
+```
+startUpload(  [  
+    { fileName: '1.txt', fileSize: 1000},
+    { fileName: '2.html', fileSize: 3000},
+    { fileName: '3.txt', fileSize: 5000},
+    { fileName: '4.txt', fileSize: 1000},
+    { fileName: '5.html', fileSize: 3000},
+    { fileName: '6.txt', fileSize: 5000}
+]);
+```
+在这个例子中，如果不使用享元模式，代码里需要为6个文件创建6个upload对象。而采用享元模式后，只需要一个共享的upload对象。如果需要上传的文件是成百上千个，就会大大提高程序的性能。
+
+享元模式模式是优化性能的一种设计模式，这与大部分模式为了封装变化而诞生的原因不同。在一个存在大量相似对象的系统中，享元模式可以很好的解决大量对象带来的性能问题。
+## 参考资料
+
+1. 《设计模式—可复用面向对象软件的基础》，作者: [美] Erich Gamma等，机械工业出uploadManager版社
+2. 《Head First 设计模式》作者: 弗里曼，中国电力出版社
+3. 《JavaScript设计模式与开发实践》 作者:曾探，人民邮电出版社
+4. 《JavaScript高级程序设计》作者：Nicholas C.Zakas，人民邮电出版社
