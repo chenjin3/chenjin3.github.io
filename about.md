@@ -4,12 +4,23 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+A full stack developer. Having development experience in HTML5，iOS，Node.js, Android, Java Web, Desktop app and Wechat platforms based on cloud platforms.
 
-### More Information
+### Background
 
-A place to include any other types of information that you'd like to include about yourself.
+#### work experience
 
+[Kingsoft](http://www.ksyun.com/) Cloud Team, Front End Engineer 2016
+[HIYO](http://hiyo.ren/) Cofounder 2015
+[Lenovo](http://www.lenovo.com.cn/) Service Team, Researcher(Software) 2013-2015
+[Adobe](http://www.adobe.com/) Globalization Team, Intern 2011
+
+
+#### education experience
+
+M.S. [Beihang U. NLSDE](http://www.nlsde.buaa.edu.cn/) 2013
+
+B.S. [Beihang U.](http://www.buaa.edu.cn/) 2010
 ### Contact me
 
-[email@domain.com](mailto:email@domain.com)
+[chenjin@kingsoft.com](mailto:chenjin@kingsoft.com)
