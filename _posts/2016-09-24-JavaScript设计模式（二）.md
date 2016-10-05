@@ -7,6 +7,7 @@ published: true
 本文承接上一篇[JavaScript设计模式（一）](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/)，继续介绍其他常用的设计模式。
 
 ## 索引
+
 ### JavaScript设计模式(一)
 
 * [原型模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#section-7)
@@ -17,6 +18,7 @@ published: true
 * [策略模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#section-18)
 
 ### JavaScript设计模式（二）
+
 #### 包装模式
 
 * [单例模式](#section-4)
@@ -964,7 +966,7 @@ for ( var j = 1; j <= 50; j++ ){
 我们可以通过一个对象工厂来解决第一个问题，只有当共享对象被真正需要时，它才从工厂中被创建出来。对于第二个问题，可以用一个管理器来记录的外部状态，使这些外部状态通过某个钩子和共享对象联系起来。
 
 ### 应用实例： 多文件上传
-![多文件上传Demo](/images/flyweight.png)
+![多文件上传Demo](/images/designPattern/flyweight.png)
 
 为了支持同时上传多个文件，如果每个文件都对应一个JavaScript上传对象的创建，程序中会同时new出成百上千个upload对象，造成内存的而浪费。这里我们可以使用享元模式将同一种上传方式的文件上传任务交给一个共享对象即可。为了简化示例程序，这里只保留upload对象的删除文件功能(Upload.prototyp.delFile)。由于我们只用一种上传方式上传文件，这里的upload对象没有内部状态，待上传文件的实际大小，文件列表项的DOM节点等属性均可以作为外部状态。简化的Upload构造器代码如下：
 
