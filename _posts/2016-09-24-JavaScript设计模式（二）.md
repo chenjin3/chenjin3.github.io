@@ -48,9 +48,23 @@ published: true
 
 ```
 //带命名空间的全局变量模拟单例
-var myApp = {     loginLayer:  function(){         var div = document.createElement('div');         div.innerHTML = '我是登录浮窗';         div.style.display = 'none';         document.body.appendChild(div);         return div;     }() }; var loginLayer1 =  myApp.loginLayer; var loginLayer2 =  myApp.loginLayer; console.log(loginLayer1 == loginLayer2); //true document.getElementById( 'loginBtn' ).onclick = function() {     myApp.loginLayer.style.display = 'block'; }
-
+var myApp = {
+    loginLayer:  function(){
+        var div = document.createElement('div');
+        div.innerHTML = '我是登录浮窗';
+        div.style.display = 'none';
+        document.body.appendChild(div);
+        return div;
+    }()
+};
+var loginLayer1 =  myApp.loginLayer;
+var loginLayer2 =  myApp.loginLayer;
+console.log(loginLayer1 == loginLayer2); //true
+document.getElementById( 'loginBtn' ).onclick = function(){    
+	myApp.loginLayer.style.display = 'block';
+}
 ```
+
 虽然这种全局变量也可以提供唯一的对象供全局访问，但这个对象会在页面一加载好的时候就创建，而不是在需要的时候才创建对象实例。有可能用户只是到该网站浏览一些公开的信息，并不想登录。这种一开始就创建登录浮窗的方式可能白白浪费了一些DOM节点。
 这时候就需要单例模式的惰性加载能力，我们可以使用惰性单例在用户点击登录按钮的时候才开始创建该浮窗，代码所示：
 
