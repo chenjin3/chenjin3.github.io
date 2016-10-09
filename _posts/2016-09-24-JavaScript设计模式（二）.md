@@ -41,24 +41,18 @@ published: true
 
 ## 单例模式
 单例模式和原型模式、工厂模式一样，也是用于对对象的创建过程进行了抽象，将软件模块中对象的创建和对象的使用分离，使整个系统的设计更加符合单一职责原则。
-单例模式确保在系统中一个构造器仅有一个实例，并提供全局访问。它可以在合适的时候创建唯一的一个对象。全局变量不是单利模式，但在JavaScript中，我们经常把带命名空间的全局变量当单例来使用，如下所示。
-
-```
-var myApp = {
-   a: new function(){
-       console.log("I'm a");
-   },
-   b: new function(){}
-};
-var variable1 =  myApp.a;
-var variable2 =  myApp.a;
-console.log(variable1 == variable2); //true
-```
-虽然这种全局变量也可以提供唯一的对象供全局访问，但这个对象会在页面一加载好的时候就创建，而不是在需要的时候才创建对象实例。这时候就需要单例模式的惰性加载能力。
+单例模式确保在系统中一个构造器仅有一个实例，并提供全局访问。它可以在合适的时候创建唯一的一个对象。
 
 例如我们要开发系统的登录功能。当用户单击登录按钮时，需要显示一个登录浮窗。
-一种解决方案是在页面加载完成时就创建好这个登录浮窗，但处于隐藏状态，当用户点击登录按钮时它才显示。这种方式有一个问题，有可能用户只是到该网站浏览一些公开的信息，并不想登录。这种一开始就创建登录浮窗的方式可能白白浪费了一些DOM节点。
-我们可以使用惰性单例在用户点击登录按钮的时候才开始创建该浮窗。如下所示。
+一种方案是在页面加载完成时就创建好这个登录浮窗，但处于隐藏状态，当用户点击登录按钮时它才显示。全局变量不是单利模式，但在JavaScript中，我们经常把带命名空间的全局变量当单例来使用，使用带命名空间的全局变量实现上述功能的代码如下：
+
+```
+//带命名空间的全局变量模拟单例
+var myApp = {     loginLayer:  function(){         var div = document.createElement('div');         div.innerHTML = '我是登录浮窗';         div.style.display = 'none';         document.body.appendChild(div);         return div;     }() }; var loginLayer1 =  myApp.loginLayer; var loginLayer2 =  myApp.loginLayer; console.log(loginLayer1 == loginLayer2); //true document.getElementById( 'loginBtn' ).onclick = function() {     myApp.loginLayer.style.display = 'block'; }
+
+```
+虽然这种全局变量也可以提供唯一的对象供全局访问，但这个对象会在页面一加载好的时候就创建，而不是在需要的时候才创建对象实例。有可能用户只是到该网站浏览一些公开的信息，并不想登录。这种一开始就创建登录浮窗的方式可能白白浪费了一些DOM节点。
+这时候就需要单例模式的惰性加载能力，我们可以使用惰性单例在用户点击登录按钮的时候才开始创建该浮窗，代码所示：
 
 ```
 //管理单例
@@ -1067,3 +1061,5 @@ startUpload(  [
 2. 《Head First 设计模式》作者: 弗里曼，中国电力出版社
 3. 《JavaScript设计模式与开发实践》 作者:曾探，人民邮电出版社
 4. 《JavaScript高级程序设计》作者：Nicholas C.Zakas，人民邮电出版社
+
+
