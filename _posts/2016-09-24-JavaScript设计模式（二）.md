@@ -220,7 +220,7 @@ InboxProxy.prototype = {
 		this.doNotDisturb = ! this.doNotDisturb;
 	},
 	_init: function() {
-		if(! this.doNotDisturb && !this.index) {
+		if(! this.doNotDisturb && !this.inbox) {
 			this.inbox = new Inbox();
 			return true;
 		}
