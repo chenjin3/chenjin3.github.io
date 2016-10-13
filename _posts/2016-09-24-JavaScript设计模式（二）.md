@@ -347,41 +347,43 @@ var submitBtn = document.getElementById('submitBtn');
 var formSubmit = function(){
 	var errorMsg = validateFunc(); //校验表单的函数
    if ( errorMsg ){
+   	  alert(errorMsg);
        return;
    }
    var param = {
-   	username: registerForm.userName
-   	password: registerForm.password
-   	phoneNumber: registerForm.phoneNumber
+   	username: registerForm.userName.value,
+   	password: registerForm.password.value,
+   	phoneNumber: registerForm.phoneNumber.value
    }
-   ajax('http://xxx.com/login', param);
+   ajax('POST','http://xxx.com/register', param);
 };
 
- submitBtn.onclick = function(
+registerForm.onsubmit = function(){
  			formSubmit();
+ 			return false;
  }
 ```
 
-为了符合单一职责原则，我们要使validateFunc和formSubmit完全分离开。这里用装饰这模式重构代码如下：
+为了符合单一职责原则，我们要使validateFunc和formSubmit完全分离开。这里用装饰者模式重构代码如下：
 
 ```
 Function.prototype.before = function( beforefn ){	var __self = this;
- 	return function(){		if ( beforefn.apply( this, arguments ) ){
-			return;// beforefn返回errorMsg的情况直接return,不再执行后面的原函数
-	}	return __self.apply( this, arguments );
+ 	return function(){		var errorMsg = beforefn.apply( this, arguments ); 		if (errorMsg ){     		return errorMsg;// beforefn返回errorMsg的情况直接return,不再执行后面的原函数 		}		return __self.apply( this, arguments );
 	}}
 var formSubmit = function(){
    var param = {
-   	username: registerForm.userName
-   	password: registerForm.password
-   	phoneNumber: registerForm.phoneNumber
+   	username: registerForm.userName.value
+   	password: registerForm.password.value
+   	phoneNumber: registerForm.phoneNumber.value
    }
-   ajax('http://xxx.com/login', param);
+   ajax('POST','http://xxx.com/login', param);
 };
-formSubmit = formSubmit.before( validateFunc );submitBtn.onclick = function(){
-	formSubmit();}
+formSubmit = formSubmit.before( validateFunc );registerForm.onsubmit = function(){
+	var error = formSubmit();
+	if(error)  alert(error);
+	return false;}
 ```
-这里我们改写了Function.prototype.before函数，如果beforefn函数返回的errorMsg不为空，则直接返回，不再执行后面的原函数。这样校验输入和提交表单的代码就完全分离开了，有利于分开维护这两个函数。formSubmit=formSubmit.before( validateFunc )这句代码,如同把校验规则动态接在formSubmit函数之前,validateFunc成为一个即插即用的函数。
+这里我们改写了Function.prototype.before函数，如果beforefn函数返回的errorMsg不为空，则直接返回，不再执行后面的原函数。这样校验输入和提交表单的代码就完全分离开了，有利于分开维护这两个函数。formSubmit=formSubmit.before( validateFunc )这句代码,如同把校验规则动态接在formSubmit函数之前,validateFunc成为一个即插即用的函数。再结合策略模式，我们就可以把这些校验规则都写成插件的形式，应用在不同的项目当中。
 
 ## 适配器模式
 适配器模式主要用来解决两个已有接口之间不匹配的问题。适配器模式不需要改变已有的接口,就能够使它们协同工作。适配器是一种“亡羊补牢”的模式，没有人会在程序设计之初就使用它。也许某些现在好好工作的接口，未来某天却不在适用与新系统。那么我们可以用适配器模式把旧接口包装成一个新接口，使他继续保持生命力。
