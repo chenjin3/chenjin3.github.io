@@ -367,9 +367,17 @@ registerForm.onsubmit = function(){
 为了符合单一职责原则，我们要使validateFunc和formSubmit完全分离开。这里用装饰者模式重构代码如下：
 
 ```
-Function.prototype.before = function( beforefn ){	var __self = this;
- 	return function(){		var errorMsg = beforefn.apply( this, arguments ); 		if (errorMsg ){     		return errorMsg;// beforefn返回errorMsg的情况直接return,不再执行后面的原函数 		}		return __self.apply( this, arguments );
-	}}
+Function.prototype.before = function( beforefn ){
+	var __self = this;
+ 	return function(){
+         var errorMsg = beforefn.apply( this, arguments );
+         if (errorMsg ){
+            // beforefn返回errorMsg的情况直接return,不再执行后面的原函数
+            return errorMsg;
+        }
+        return __self.apply( this, arguments );
+	}
+}
 var formSubmit = function(){
    var param = {
    	username: registerForm.userName.value
@@ -378,10 +386,12 @@ var formSubmit = function(){
    }
    ajax('POST','http://xxx.com/login', param);
 };
-formSubmit = formSubmit.before( validateFunc );registerForm.onsubmit = function(){
+formSubmit = formSubmit.before( validateFunc );
+registerForm.onsubmit = function(){
 	var error = formSubmit();
 	if(error)  alert(error);
-	return false;}
+	return false;
+}
 ```
 这里我们改写了Function.prototype.before函数，如果beforefn函数返回的errorMsg不为空，则直接返回，不再执行后面的原函数。这样校验输入和提交表单的代码就完全分离开了，有利于分开维护这两个函数。formSubmit=formSubmit.before( validateFunc )这句代码,如同把校验规则动态接在formSubmit函数之前,validateFunc成为一个即插即用的函数。再结合策略模式，我们就可以把这些校验规则都写成插件的形式，应用在不同的项目当中。
 
@@ -392,9 +402,15 @@ formSubmit = formSubmit.before( validateFunc );registerForm.onsubmit = function
 
 ```
 var baiduMap = {
-	show: function(){		console.log( '开始渲染百度地图' );
-	}};var renderMap = function( map ){	if ( map.show instanceof Function ){		map.show();
-	}};
+	show: function(){
+		console.log( '开始渲染百度地图' );
+	}
+};
+var renderMap = function( map ){
+	if ( map.show instanceof Function ){
+		map.show();
+	}
+};
 renderMap( baiduMap ); //输出：开始渲染百度地图
 ```
 由于第三方的接口不在我们自己的控制范围内，后来某一天baiduMap提供的显示方法改名叫display了。这是我们一般不去更改baiduMap这个第三方的对象，而是通过增加baiduMapAdapter来解决问题：
