@@ -4,40 +4,40 @@ title: JavaScript设计模式（二）
 published: true
 ---
 
-本文承接上一篇[JavaScript设计模式（一）](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/)，继续介绍其他常用的设计模式。
+本文承接上一篇[JavaScript设计模式（一）](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/)，继续介绍其他常用的设计模式。
 
 ## 索引
 
 ### JavaScript设计模式(一)
 
-* [原型模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#section-7)
-* [工厂模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#section-9)
-* [迭代器模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#section-13)
-* [职责链模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#section-15 "职责链模式与电商预购应用")
-* [命令模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#section-17)
-* [策略模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#section-19)
+* [原型模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#原型模式)
+* [工厂模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#工厂模式)
+* [迭代器模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#迭代器模式)
+* [职责链模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#职责链模式 "职责链模式与电商预购应用")
+* [命令模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#命令模式)
+* [策略模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%B8%80/#策略模式)
 
 ### JavaScript设计模式（二）
 
 #### 包装模式
 
-* [单例模式](#section-4)
-* [代理模式](#section-5)
-* [装饰者模式](#section-10)
-* [适配器模式](#section-15)
-* [外观模式](#section-16)
+* [单例模式](#单例模式)
+* [代理模式](#代理模式)
+* [装饰者模式](#装饰者模式)
+* [适配器模式](#适配器模式)
+* [外观模式](#外观模式)
 
 #### 一对多关系
 
-* [观察者模式](#section-17)
-* [中介者模式](#section-19)
+* [观察者模式](#观察者模式)
+* [中介者模式](#中介者模式)
 
 #### 其他
 
-* [模板方法模式](#section-21)
-* [组合模式](#section-25)
-* [状态模式](#section-27)
-* [享元模式](#section-28)
+* [模板方法模式](#模板方法模式)
+* [组合模式](#组合模式)
+* [状态模式](#状态模式)
+* [享元模式](#享元模式)
 
 ## 单例模式
 单例模式和原型模式、工厂模式一样，也是用于对对象的创建过程进行了抽象，将软件模块中对象的创建和对象的使用分离，使整个系统的设计更加符合单一职责原则。

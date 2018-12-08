@@ -32,32 +32,32 @@ published: true
 
 ### Javascript原生支持的模式  
 
-* [原型模式](#section-7)
-* [工厂模式](#section-9)
-* [迭代器模式](#section-13)
-* [职责链模式](#section-15 "职责链模式与电商预购应用")
-* [命令模式](#section-17)
-* [策略模式](#section-19)
+* [原型模式](#原型模式)
+* [工厂模式](#工厂模式)
+* [迭代器模式](#迭代器模式)
+* [职责链模式](#职责链模式 "职责链模式与电商预购应用")
+* [命令模式](#命令模式)
+* [策略模式](#策略模式)
 
 ### 包装模式
 
-* [单例模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#section-4)
-* [代理模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#section-5)
-* [装饰者模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#section-10)
-* [适配器模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#section-15)
-* [外观模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#section-16)
+* [单例模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#单例模式)
+* [代理模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#代理模式)
+* [装饰者模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#装饰者模式)
+* [适配器模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#适配器模式)
+* [外观模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#外观模式)
 
 ### 一对多关系
 
-* [观察者模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#section-17)
-* [中介者模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#section-19)
+* [观察者模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#观察者模式)
+* [中介者模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#中介者模式)
 
 ### 其他模式
 
-* [模板方法模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#section-21)
-* [组合模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#section-25)
-* [状态模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#section-27)
-* [享元模式](https://chenjin3.github.io/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#section-28)
+* [模板方法模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#模板方法模式)
+* [组合模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#组合模式)
+* [状态模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#状态模式)
+* [享元模式](/JavaScript%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F-%E4%BA%8C/#享元模式)
 
 
 ## 原型模式
