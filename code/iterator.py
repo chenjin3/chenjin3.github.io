@@ -15,7 +15,7 @@ class Counter:
             raise StopIteration
         else:
             self.current += 1
-            return self.current - 1
+            return self.current - 1 # current 
 
 for c in Counter(3, 8):
     print(c)
