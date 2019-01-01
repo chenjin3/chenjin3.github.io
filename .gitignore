@@ -11,3 +11,6 @@ package.json
 .idea
 *.iml
 .vscode/
+code/*.class
+code/lambda
+code/mapFilterReduce

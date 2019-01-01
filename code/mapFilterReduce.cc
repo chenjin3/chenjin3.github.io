@@ -17,13 +17,13 @@ int main() {
     
     //filter
     //remove_if only guarantees that [begin, middle) contains the matching elements
-    vector<string>::iterator newEnd = remove_if(str.begin(),  str.end(), [](string s) {return !(isupper(s[0]));} );
-    for(auto it = str.begin(); it != newEnd; ++it) {
+    vector<string>::iterator endFilter = remove_if(str.begin(),  str.end(), [](string s) {return !(isupper(s[0]));} );
+    for(auto it = str.begin(); it != endFilter; ++it) {
         cout<< *it << endl;
     }
 
     //reduce
-    string jointStr = accumulate(str.begin(), str.end(), string(""), [](string acc, string cur){ return acc + ":" + cur; });
+    string jointStr = accumulate(str.begin(), str.end(), string(""), [](string first, string second){ return first + ":" + second; });
     cout<< jointStr << endl;
 }
 
