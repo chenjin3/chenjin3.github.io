@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<hmtl>
+  <head>
+    <title>tail recursion optimization</title>
+    <script src="http://peterolson.github.com/BigInteger.js/BigInteger.min.js"></script>
+  </head>
+  <body>
+    <script>
+        "use strict";
+        
+        function fibIterRecursive(n, a, b){
+            if (n === 0) {
+              return b;
+            } else {
+              return fibIterRecursive(n-1, bigInt(a).add(bigInt(b)), bigInt(a));
+            }
+          };
+          
+        function fib(n){
+            return fibIterRecursive(n, 1, 0);
+        }
+
+        if(/Safari/.test(navigator.userAgent) ) {
+          console.log(fib(2345).toString())
+        }else {
+          console.log('not support tail call optimization')
+        }
+       
+    </script>
+  </body>
+</hmtl>
