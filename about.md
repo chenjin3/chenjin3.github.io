@@ -4,14 +4,16 @@ title: About
 permalink: /about/
 ---
 
-A full stack developer. Having development experience in HTML5，iOS，Node.js, Android, Java Web, Desktop app and Wechat platforms based on cloud platforms.
+As a full stack developer, AI product manager, and cloud solutions architect, I specialize in cross-platform application development, along with the design and research of video and visual AI applications.
 
 ### Background
 
 #### work experience
-[Kingsoft](http://www.ksyun.com/) CDN Team, Software Architect 2018
+[Alibaba Cloud](http://www.aliyun.com/) Public Cloud Team, Solutions Architect 2024-2025
 
-[Kingsoft](http://www.ksyun.com/) Object Storage Team, Software Engineer 2016
+[China Telecom Cloud](http://www.ctyun.cn/) CDN AI Team and Elastic Computing Team, Product Specialist 2020-2024
+
+[Kingsoft](http://www.ksyun.com/) Data Storage Team and Video AI Team, Software Architect 2015-2020
 
 [HIYO](http://hiyo.ren/) Cofounder 2015
 
@@ -28,4 +30,4 @@ B.S. [Beihang U.](http://www.buaa.edu.cn/) 2010
 
 ### Contact me
 
-[chenjin@kingsoft.com](mailto:chenjin@kingsoft.com)
+[yuxian.cj@alibaba-inc.com](mailto:yuxian.cj@alibaba-inc.com)
